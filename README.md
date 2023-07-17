@@ -4,7 +4,7 @@ A handcrafted convolutional neural network.
 
 Each layer is designed with flexible, adaptive architecture, accommodating different inputs automatically based on user-defined hyperparameters. Users simply need to define hyperparameters such as the size of the convolutional kernel and the number of channels.
 
-This project was inspired by [assignments](https://github.com/Avafly/Homework-Project/tree/master/DeepLearning/NumPy-CNN) I worked on during my university days, with numerous optimizations made, such as employing tensor dot products in place of for-loops, rectifying some incorrect formula implementations, and significantly improving runtime speed and reducing computational resource requirements.
+This project was inspired by [assignments](https://github.com/Avafly/Homework-Project/tree/master/DeepLearning/NumPy-CNN) I worked on during my university days, with numerous optimizations made.
 
 ## Features
 
