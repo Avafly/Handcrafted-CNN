@@ -24,13 +24,13 @@ Since TensorFlow here is only used to download the dataset, either CPU or GPU ve
 
 ### Training
 
-<img src="./images/running.png" alt="training" width="600" />
+<img src="./images/running.png" alt="training" width="700" />
 
 ### Evaluation
 
 After training, the model is evaluated using test data.
 
-<img src="./images/test.png" alt="test" width="600" />
+<img src="./images/test.png" alt="test" width="700" />
 
 If `plot_sample_prediction == True`, a sample prediction plot will be generated after the testing is completed.
 
