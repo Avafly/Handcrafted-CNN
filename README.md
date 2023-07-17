@@ -24,21 +24,21 @@ Since TensorFlow here is only used to download the dataset, either CPU or GPU ve
 
 ### Training
 
-<img src="./image/running.png" alt="training" width="600" />
+<img src="./images/running.png" alt="training" width="600" />
 
 ### Evaluation
 
 After training, the model is evaluated using test data.
 
-<img src="./image/test.png" alt="test" width="600" />
+<img src="./images/test.png" alt="test" width="600" />
 
 If `plot_sample_prediction == True`, a sample prediction plot will be generated after the testing is completed.
 
-<img src="./image/pred_demo_fashion_mnist.png" alt="test_result" width="700" />
+<img src="./images/pred_demo_fashion_mnist.png" alt="test_result" width="700" />
 
 ## Network architecture
 
-<img src="./image/net_archi.png" alt="net_archi" width="600" />
+<img src="./images/net_archi.png" alt="net_archi" width="600" />
 
 
 
@@ -55,7 +55,7 @@ If `plot_sample_prediction == True`, a sample prediction plot will be generated 
 
 Here is an example of adding a convolutional layer to the neural network. After adding the convolutional layer, the model's architecture becomes as follows.
 
-<img src="./image/edited_net_archi.png" alt="edited_net_archi" width="600" />
+<img src="./images/edited_net_archi.png" alt="edited_net_archi" width="600" />
 
 
 
