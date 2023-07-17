@@ -133,6 +133,6 @@ Now, the new convolutional layer is added. You can use this way to add and conne
 - [ ] Add AveragePooling layer class
 - [ ] Add parameters save and load functions
 
-## Remarks
+## Final words
 
 The program does not provide the option to set hyperparameters via command-line arguments, as this is not essential for the purpose of understanding the computations of forward and backward propagation in deep learning networks. The code contains thorough comments, making it straightforward to modify hyperparameters and customize models directly within the code itself.
