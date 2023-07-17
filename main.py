@@ -32,18 +32,8 @@ class nn_mnist_classifier:
         # cross entropy
         self.xent = nnl.nn_cross_entropy_layer()
 
-        # initialize RMSProp parameter
-        # RMSProp parameter v in the RMSProp update
+        # for RMSProp parameter initialization
         self.is_first_update = True
-        # RMSProp v for convolutional layer, one for W and one for b
-        self.v_w_cv1 = None
-        self.v_b_cv1 = None
-        # RMSProp v for fully connected layer 1
-        self.v_w_fc1 = None
-        self.v_b_fc1 = None
-        # RMSProp v for fully connected layer 2
-        self.v_w_fc2 = None
-        self.v_b_fc2 = None
 
         # beta for RMSProp update
         self.rmsprop_beta = rmsprop_beta
