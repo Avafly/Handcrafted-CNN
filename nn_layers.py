@@ -27,7 +27,7 @@ class nn_convolutional_layer:
         self.W = W
         self.b = b
 
-    def get_gradient(self):
+    def get_gradients(self):
         return self.bwd_cache["dLdW"], self.bwd_cache["dLdb"]
 
     def forward(self, X, is_training=True):
@@ -212,7 +212,7 @@ class nn_fc_layer:
         self.W = W
         self.b = b
 
-    def get_gradient(self):
+    def get_gradients(self):
         return self.bwd_cache["dLdW"], self.bwd_cache["dLdb"]
 
     def forward(self, X, is_training=True):

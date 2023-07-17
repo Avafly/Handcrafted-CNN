@@ -108,9 +108,9 @@ class nn_mnist_classifier:
         epsilon = 1e-8
 
         # load dLdW and dLdb for weight update
-        dldw_fc2, dldb_fc2 = self.fc_layer_2.get_gradient()
-        dldw_fc1, dldb_fc1 = self.fc_layer_1.get_gradient()
-        dldw_cv1, dldb_cv1 = self.conv_layer_1.get_gradient()
+        dldw_fc2, dldb_fc2 = self.fc_layer_2.get_gradients()
+        dldw_fc1, dldb_fc1 = self.fc_layer_1.get_gradients()
+        dldw_cv1, dldb_cv1 = self.conv_layer_1.get_gradients()
 
         ####################
         ## RMSProp update ##
