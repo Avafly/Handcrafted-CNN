@@ -35,7 +35,7 @@ class nn_mnist_classifier:
         # for RMSProp parameter initialization
         self.is_first_update = True
 
-        # beta for RMSProp update
+        # decay (beta) for RMSProp update
         self.rmsprop_beta = rmsprop_beta
         # learning rate
         self.lr = lr
@@ -174,7 +174,7 @@ lr = 1.5e-3
 n_epoch = 1
 batch_size = 64
 
-# beta for RMSProp
+# decay (beta) for RMSProp
 beta = 0.9
 
 # define classifier
