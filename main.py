@@ -14,14 +14,14 @@ class nn_mnist_classifier:
         self.conv_layer_1 = nnl.nn_convolutional_layer(Wx_size=3, Wy_size=3, in_ch_size=1, out_ch_size=32)
 
         # activation layer
-        self.act_1 = nnl.nn_activation_layer()
+        self.act_1 = nnl.nn_activation_layer_relu()
 
         # maxpool
         self.maxpool_layer_1 = nnl.nn_max_pooling_layer(stride=2, pool_size=2)
 
         # fully connected layer 1
         self.fc_layer_1 = nnl.nn_fc_layer(input_size=13*13*32, output_size=128)
-        self.act_2 = nnl.nn_activation_layer()
+        self.act_2 = nnl.nn_activation_layer_relu()
 
         # fully connected layer 2
         self.fc_layer_2 = nnl.nn_fc_layer(input_size=128, output_size=10)

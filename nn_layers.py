@@ -256,7 +256,7 @@ class nn_fc_layer:
 ##       ReLU       ##
 ######################
 
-class nn_activation_layer:
+class nn_activation_layer_relu:
     def __init__(self):
         self.fwd_cache = None
 
@@ -283,6 +283,41 @@ class nn_activation_layer:
         dLdx[X<=0] = 0
         return dLdx
     
+
+######################
+## activation layer ##
+##    Leaky ReLU    ##
+######################
+
+class nn_activation_layer_leaky_relu:
+    def __init__(self, leak=0.01):
+        self.fwd_cache = None
+        self.leak = leak
+
+    def forward(self, X, is_training=True):
+        out = X.copy()  # deep copy
+        out[out<0] *= self.leak
+
+        # save the forward cache for backprop
+        if is_training:
+            # store intermediate variables
+            self.fwd_cache = {}
+            self.fwd_cache["X"] = X
+
+        return out
+
+    def backprop(self, dLdy):
+        # ensure is_training=True, i.e., the forward cache exists
+        assert self.fwd_cache != None
+        
+        # load input data
+        X = self.fwd_cache["X"]
+
+        dLdx = dLdy.copy()
+        dLdx[X<=0] *= self.leak
+        return dLdx
+
+
 
 ###################
 ## softmax layer ##
