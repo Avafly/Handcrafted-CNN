@@ -322,7 +322,7 @@ class nn_activation_layer_leaky_relu:
 ## batch normalization ##
 #########################
 
-class nn_batchnorm_layer:
+class nn_batchnorm_layer_2d:
     def __init__(self, num_features, momentum=0.9):
         self.momentum = momentum
         shape = (1, num_features, 1, 1)
