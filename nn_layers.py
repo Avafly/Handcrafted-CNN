@@ -318,6 +318,84 @@ class nn_activation_layer_leaky_relu:
         return dLdx
 
 
+#########################
+## batch normalization ##
+#########################
+
+class nn_batchnorm_layer:
+    def __init__(self, num_features, momentum=0.9):
+        self.momentum = momentum
+        shape = (1, num_features, 1, 1)
+        self.gamma = np.ones(shape)
+        self.beta = np.zeros(shape)
+        self.moving_mean = np.zeros(shape)
+        self.moving_var = np.ones(shape)
+        self.epsilon = 1e-8
+        self.fwd_cache = None
+        self.bwd_cache = None
+
+    def set_weights(self, gamma, beta):
+        self.gamma = gamma
+        self.beta = beta
+
+    def get_gradients(self):
+        return self.bwd_cache["dLdgamma"], self.bwd_cache["dLdbeta"]
+
+    def update_weights(self, dLdgamma, dLdbeta):
+        self.gamma += dLdgamma
+        self.beta += dLdbeta
+
+    def forward(self, X, is_training=True):
+
+        if is_training:
+            # compute mean and var values of the input
+            X_mean = np.mean(X, axis=(0, 2, 3), keepdims=True)
+            X_var = np.var(X, axis=(0,2,3), keepdims=True)
+            # update mean and var
+            self.moving_mean = (1-self.momentum)*X_mean + self.momentum*self.moving_mean
+            self.moving_var = (1-self.momentum)*X_var + self.momentum*self.moving_var
+            # normalize
+            X_hat = (X-X_mean) / np.sqrt(X_var+self.epsilon)
+            # save forward cache
+            self.fwd_cache = {}
+            self.fwd_cache["X_mean_var_hat"] = (X, X_mean, X_var, X_hat)
+
+        else:
+            X_mean = self.moving_mean
+            X_var = self.moving_var
+            X_hat = (X-X_mean) / np.sqrt(X_var+self.epsilon)
+
+        out = self.gamma * X_hat + self.beta
+        return out
+
+    def backprop(self, dLdy):
+        epsilon = 1e-8
+        # load input data and forward cache
+        X, X_mean, X_var, X_hat = self.fwd_cache["X_mean_var_hat"]
+
+        # input shape
+        batch_size, _, inR, inC = X.shape
+
+        # compute the gradients of gamma and beta
+        dLdgamma = np.sum(dLdy * X_hat, axis=(0, 2, 3), keepdims=True)
+        dLdbeta = np.sum(dLdy, axis=(0, 2, 3), keepdims=True)
+
+        # compute gradient of X
+        dLdX_hat = dLdy * self.gamma
+        # dL/dX_var = dL/dX_hat * dX_hat/dX_var
+        dX_var = np.sum(dLdX_hat * (X-X_mean)*-0.5*(X_var+epsilon)**(-1.5), axis=(0, 2, 3), keepdims=True)
+        # dL/dX_mean = dL/dX_hat * dX_hat/dX_mean
+        dX_mean = np.sum(dLdX_hat * -(X_var+epsilon)**(-0.5), axis=(0,2,3), keepdims=True) + dX_var * np.mean(-2.0 * (X-X_mean), axis=(0,2,3), keepdims=True)
+        # dL/dX = dL/dX_hat * dX_hat/dX + dL/dX_var * dX_var/dX + dL/dX_mean * dX_mean/dX
+        dLdx = dLdX_hat*(X_var+epsilon)**(-0.5) + dX_var*2.0*(X-X_mean)/batch_size/inR/inC + dX_mean/batch_size/inR/inC
+
+        # cache upstream gradients for weight updates
+        self.bwd_cache = {}
+        self.bwd_cache["dLdgamma"] = dLdgamma
+        self.bwd_cache["dLdbeta"] = dLdbeta
+
+        return dLdx, dLdgamma, dLdbeta
+
 
 ###################
 ## softmax layer ##
@@ -357,9 +435,9 @@ class nn_cross_entropy_layer:
         self.fwd_cache = None
 
     def forward(self, X, y, is_training=True):
-        eps = 1e-10
+        epsilon = 1e-5
         # compute cross entropy
-        log_likelihood = -np.log(X[range(y.shape[0]), y] + eps)
+        log_likelihood = -np.log(X[range(y.shape[0]), y] + epsilon)
         loss = np.sum(log_likelihood) / y.shape[0]
 
         # save the forward cache for backprop

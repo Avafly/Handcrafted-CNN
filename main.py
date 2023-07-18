@@ -39,6 +39,8 @@ class nn_mnist_classifier:
         self.rmsprop_beta = rmsprop_beta
         # learning rate
         self.lr = lr
+        # epsilon
+        self.epsilon = 1e-5
 
     # forward method
     # inputs:
@@ -95,7 +97,7 @@ class nn_mnist_classifier:
 
         beta = self.rmsprop_beta
         lr = self.lr
-        epsilon = 1e-8
+        epsilon = self.epsilon
 
         # load dLdW and dLdb for weight update
         dldw_fc2, dldb_fc2 = self.fc_layer_2.get_gradients()
@@ -280,7 +282,7 @@ for i in range(n_epoch):
 
 print("Start testing")
 
-test_batch = 100
+test_batch = 1000
 test_iter = int(y_test.shape[0] / test_batch)
 tot_accy = 0
 
