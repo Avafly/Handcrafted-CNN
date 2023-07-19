@@ -2,7 +2,7 @@
 
 A handcrafted convolutional neural network.
 
-Each layer is designed with flexible, adaptive architecture, accommodating different inputs automatically based on user-defined hyperparameters. Users simply need to define hyperparameters such as the size of the convolutional kernel and the number of channels.
+Each layer is designed with flexible, adaptive architecture, accommodating different inputs automatically based on user-defined hyperparameters. You can use the various layers provided in [nn_layers](https://github.com/Avafly/Handcrafted-CNN/blob/main/nn_layers.py) to build your neural network architecture.
 
 This project was inspired by [assignments](https://github.com/Avafly/Homework-Project/tree/master/DeepLearning/NumPy-CNN) I worked on during my university days, with numerous optimizations made.
 
