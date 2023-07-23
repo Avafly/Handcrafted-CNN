@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 
 # import nn_layers module make by me
@@ -226,7 +227,7 @@ for i in range(n_epoch):
     X_trn = X_trn[shuffled_index_train]
     y_trn = y_trn[shuffled_index_train]
 
-    print("Epoch number: %d/%d" % (i + 1, n_epoch))
+    print("Epoch number: %d/%d" % (i + 1, n_epoch), " "*1)
 
     # for tracking training accuracy
     trn_accy = 0
@@ -247,8 +248,7 @@ for i in range(n_epoch):
 
         # check loss every 50 loops
         if (j + 1) % 50 == 0:
-            print("Progress: %.2f%%" % ((j+n_steps*i) / n_steps / n_epoch * 100))
-            print("Loss: %.4f" % loss)
+            print("Loss: %.4f" % loss, " "*5)
             
             # print training accuracy every 200 loops
             if (j + 1) % 200 == 0:
@@ -271,7 +271,10 @@ for i in range(n_epoch):
                     val_accy = np.sum((estim==y).astype("uint8"))
                     print("Validation accuracy: %.2f%%" % val_accy)
 
-            print("-" * 30)
+        # show progress
+        if (j + 1) % 10 == 0:
+            print("Progress: [%5.1f%%]" % ((j+n_steps*i) / n_steps / n_epoch * 100), end="\r")
+            sys.stdout.flush()
 
 #############
 ## testing ##
@@ -280,7 +283,7 @@ for i in range(n_epoch):
 # test_iter: total number of batch iterations to complete testing over test data
 # tot_accy: total accuracy
 
-print("Start testing")
+print("Start testing", " "*4)
 
 test_batch = 1000
 test_iter = int(y_test.shape[0] / test_batch)
