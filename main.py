@@ -11,7 +11,7 @@ class nn_mnist_classifier:
         ## initialize each layer
 
         # convolutional layer 1
-        self.conv_layer_1 = nnl.nn_convolutional_layer(Wx_size=3, Wy_size=3, in_ch_size=1, out_ch_size=32)
+        self.conv_layer_1 = nnl.nn_convolutional_layer(kernel_size=3, in_ch_size=1, out_ch_size=32)
 
         # activation layer
         self.act_1 = nnl.nn_activation_layer_relu()

@@ -6,7 +6,15 @@ from skimage.util.shape import view_as_windows
 #########################
 
 class nn_convolutional_layer:
-    def __init__(self, Wx_size, Wy_size, in_ch_size, out_ch_size, pad_size=0, std=1):
+    def __init__(self, kernel_size, in_ch_size, out_ch_size, pad_size=0, std=1):
+        if isinstance(kernel_size, int):
+            Wx_size = kernel_size
+            Wy_size = kernel_size
+        elif isinstance(kernel_size, tuple):
+            Wx_size, Wy_size = kernel_size
+        else:
+            raise ValueError("kernel_size must be either an int or a tuple of ints")
+
         # initialization of weights
         self.W = np.random.normal(0, std / np.sqrt(in_ch_size * Wx_size * Wy_size / 2),
                                  (out_ch_size, in_ch_size, Wx_size, Wy_size))
@@ -32,33 +40,33 @@ class nn_convolutional_layer:
 
     def forward(self, X, is_training=True):
         # input shape
-        batch_size, in_ch_size, inR, inC = X.shape
+        batch_size, in_ch_size, in_H_size, in_W_size = X.shape
         # weight shape
         _, _, Wx_size, Wy_size = self.W.shape
 
         # determine the output dimensions
-        outR = inR - Wx_size + 1 + 2 * self.pad_size
-        outC = inC - Wy_size + 1 + 2 * self.pad_size
+        out_H_size = in_H_size - Wx_size + 1 + 2 * self.pad_size
+        out_W_size = in_W_size - Wy_size + 1 + 2 * self.pad_size
 
         # pad the input
         padding = [(0, 0), (0, 0), (self.pad_size, self.pad_size), (self.pad_size, self.pad_size)]
         X_padded = np.pad(X, padding, mode='constant')
 
-        # create x_windows for conv operation
+        # create X_windows for conv operation
         window_shape = (1, 1, Wx_size, Wy_size)
         view_window_stride = 1
-        x_windows = view_as_windows(X_padded, window_shape, view_window_stride)
-        x_windows = x_windows.reshape(batch_size, in_ch_size, outR, outC, Wx_size, Wy_size)
+        X_windows = view_as_windows(X_padded, window_shape, view_window_stride)
+        X_windows = X_windows.reshape(batch_size, in_ch_size, out_H_size, out_W_size, Wx_size, Wy_size)
 
         # perform convolution operation
-        # For each Wx_size*Wy_size window in 'x_windows' and each Wx_size*Wy_size
+        # For each Wx_size*Wy_size window in 'X_windows' and each Wx_size*Wy_size
         # kernel in 'W', compute the element-wise multiplication and sum the
         # results. The operation is applied across all windows and kernels,
         # resulting in an output of shape (128, 28, 26, 26) which corresponds
         # to the convolution result for each sample, each output channel, and
         # each output location.
-        out = np.tensordot(x_windows, self.W, axes=([1,4,5], [1,2,3]))
-        # (batch_size, outR, outC, out_ch_size) -> (batch_size, out_ch_size, outR, outC)
+        out = np.tensordot(X_windows, self.W, axes=([1,4,5], [1,2,3]))
+        # (batch_size, out_H_size, out_W_size, out_ch_size) -> (batch_size, out_ch_size, out_H_size, out_W_size)
         out = np.transpose(out, (0, 3, 1, 2))
         out += self.b
 
@@ -76,8 +84,8 @@ class nn_convolutional_layer:
         # ensure is_training=True, i.e., the forward cache exists
         assert self.fwd_cache != None
 
-        # reshape dLdy to (batch_size, ch_size, outR, outC)
-        # since the shape of dLdy may be (batch_size, ch_size * outR * outC)
+        # reshape dLdy to (batch_size, ch_size, out_H_size, out_W_size)
+        # since the shape of dLdy may be (batch_size, ch_size * out_H_size * out_W_size)
         dLdy = dLdy.reshape(self.fwd_cache["out_shape"])
 
         # load the cache data
@@ -86,22 +94,22 @@ class nn_convolutional_layer:
         pad_size = self.pad_size
 
         # input shape
-        batch_size, in_ch_size, inR, inC = X.shape
+        batch_size, in_ch_size, in_H_size, in_W_size = X.shape
         # weight shape
         out_ch_size, _, Wx_size, Wy_size = self.W.shape
 
         # determine the output dimensions
-        outR = inR - Wx_size + 1 + 2 * pad_size
-        outC = inC - Wy_size + 1 + 2 * pad_size
+        out_H_size = in_H_size - Wx_size + 1 + 2 * pad_size
+        out_W_size = in_W_size - Wy_size + 1 + 2 * pad_size
 
-        # create x_windows for conv operation
+        # create X_windows for conv operation
         window_shape = (1, 1, Wx_size, Wy_size)
         view_window_stride = 1
-        x_windows = view_as_windows(X_padded, window_shape, view_window_stride)
-        x_windows = x_windows.reshape(batch_size, in_ch_size, outR, outC, Wx_size, Wy_size)
+        X_windows = view_as_windows(X_padded, window_shape, view_window_stride)
+        X_windows = X_windows.reshape(batch_size, in_ch_size, out_H_size, out_W_size, Wx_size, Wy_size)
 
         # gradient w.r.t. weights
-        dLdW = np.tensordot(dLdy, x_windows, axes=([0,2,3], [0,2,3]))
+        dLdW = np.tensordot(dLdy, X_windows, axes=([0,2,3], [0,2,3]))
 
         # gradient w.r.t. bias
         dLdb = np.sum(dLdy, axis=(0,2,3)).reshape(1, out_ch_size, 1, 1)
@@ -109,12 +117,12 @@ class nn_convolutional_layer:
         # gradient w.r.t. inputs
         # create dLdy_windows for conv operation
         # calculate unpad_size used in backprop
-        # Since outR = inR-Wx_size+1+2*pad_size, inR = outR+Wx_size-1-2*pad_size => unpad_size_R = Wx_size-pad_size-1
-        unpad_size_R = Wx_size - pad_size - 1
-        unpad_size_C = Wy_size - pad_size - 1
-        dLdy_padded = np.pad(dLdy, ((0, 0), (0, 0), (unpad_size_R, unpad_size_R), (unpad_size_C, unpad_size_C)), mode="constant", constant_values=0)
+        # Since out_H_size = in_H_size-Wx_size+1+2*pad_size, in_H_size = out_H_size+Wx_size-1-2*pad_size => unpad_size_H = Wx_size-pad_size-1
+        unpad_size_H = Wx_size - pad_size - 1
+        unpad_size_W = Wy_size - pad_size - 1
+        dLdy_padded = np.pad(dLdy, ((0, 0), (0, 0), (unpad_size_H, unpad_size_H), (unpad_size_W, unpad_size_W)), mode="constant", constant_values=0)
         dLdy_windows = view_as_windows(dLdy_padded, window_shape, view_window_stride)
-        dLdy_windows = dLdy_windows.reshape(batch_size, out_ch_size, inR, inC, Wx_size, Wy_size)
+        dLdy_windows = dLdy_windows.reshape(batch_size, out_ch_size, in_H_size, in_W_size, Wx_size, Wy_size)
         # create flipped W, i.e., rotate self.W 180 degrees
         W_flipped = self.W[..., ::-1, ::-1]
 
@@ -142,22 +150,22 @@ class nn_max_pooling_layer:
 
     def forward(self, X, is_training=True):
         # input shape
-        batch_size, in_ch_size, inR, inC = X.shape
+        batch_size, in_ch_size, in_H_size, in_W_size = X.shape
 
         # get the output shape after pooling
-        outR = (inR - self.pool_size) // self.stride + 1
-        outC = (inC - self.pool_size) // self.stride + 1
+        out_H_size = (in_H_size - self.pool_size) // self.stride + 1
+        out_W_size = (in_W_size - self.pool_size) // self.stride + 1
 
         # create a window view of the input tensor and then max pool
-        x_windows = view_as_windows(X, (1, 1, self.pool_size, self.pool_size), step=(1, 1, self.stride, self.stride))
-        x_reshaped = x_windows.reshape(batch_size, in_ch_size, outR, outC, self.pool_size, self.pool_size)
-        out = x_reshaped.max(axis=(4, 5))  # max pool
+        X_windows = view_as_windows(X, (1, 1, self.pool_size, self.pool_size), step=(1, 1, self.stride, self.stride))
+        X_reshaped = X_windows.reshape(batch_size, in_ch_size, out_H_size, out_W_size, self.pool_size, self.pool_size)
+        out = X_reshaped.max(axis=(4, 5))  # max pool
 
         # if is_training, save mask for grident calculation in backpropagation phase
         if is_training:
             out_expanded = out.repeat(self.pool_size, axis=2).repeat(self.pool_size, axis=3)
-            x_window = X[:, :, :outR*self.stride, :outC*self.stride]
-            mask = np.equal(x_window, out_expanded).astype(int)
+            X_window = X[:, :, :out_H_size*self.stride, :out_W_size*self.stride]
+            mask = np.equal(X_window, out_expanded).astype(int)
             # store intermediate variables
             self.fwd_cache = {}
             self.fwd_cache["X"] = X
@@ -173,8 +181,8 @@ class nn_max_pooling_layer:
         # ensure is_training=True, i.e., the forward cache exists
         assert self.fwd_cache != None
 
-        # reshape dLdy to (batch_size, ch_size, outR, outC)
-        # since the shape of dLdy may be (batch_size, ch_size * outR * outC)
+        # reshape dLdy to (batch_size, ch_size, out_H_size, out_W_size)
+        # since the shape of dLdy may be (batch_size, ch_size * out_H_size * out_W_size)
         dLdy = dLdy.reshape(self.fwd_cache["out_shape"])
 
         dLdy_expanded = dLdy.repeat(self.pool_size, axis=2).repeat(self.pool_size, axis=3)
@@ -374,7 +382,7 @@ class nn_batchnorm_layer_2d:
         X, X_mean, X_var, X_hat = self.fwd_cache["X_mean_var_hat"]
 
         # input shape
-        batch_size, _, inR, inC = X.shape
+        batch_size, _, in_H_size, in_W_size = X.shape
 
         # compute the gradients of gamma and beta
         dLdgamma = np.sum(dLdy * X_hat, axis=(0, 2, 3), keepdims=True)
@@ -387,7 +395,7 @@ class nn_batchnorm_layer_2d:
         # dL/dX_mean = dL/dX_hat * dX_hat/dX_mean
         dX_mean = np.sum(dLdX_hat * -(X_var+epsilon)**(-0.5), axis=(0,2,3), keepdims=True) + dX_var * np.mean(-2.0 * (X-X_mean), axis=(0,2,3), keepdims=True)
         # dL/dX = dL/dX_hat * dX_hat/dX + dL/dX_var * dX_var/dX + dL/dX_mean * dX_mean/dX
-        dLdx = dLdX_hat*(X_var+epsilon)**(-0.5) + dX_var*2.0*(X-X_mean)/batch_size/inR/inC + dX_mean/batch_size/inR/inC
+        dLdx = dLdX_hat*(X_var+epsilon)**(-0.5) + dX_var*2.0*(X-X_mean)/batch_size/in_H_size/in_W_size + dX_mean/batch_size/in_H_size/in_W_size
 
         # cache upstream gradients for weight updates
         self.bwd_cache = {}
