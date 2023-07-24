@@ -6,6 +6,8 @@ Each layer is designed with flexible, adaptive architecture, accommodating diffe
 
 This project was inspired by [assignments](https://github.com/Avafly/Homework-Project/tree/master/DeepLearning/NumPy-CNN) I worked on during my university days, with numerous optimizations and improvements made.
 
+Detailed explanations on the implementation of neural network layers can be found [here](https://knownoknow.net/2023/07/24/20.html).
+
 ## Features
 
 * All computations (e.g., forward and backward propagation, weight updates) are manually implemented using numpy and `view_as_windows`, without reliance on existing libraries, such as TensorFlow and PyTorch.
