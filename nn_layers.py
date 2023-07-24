@@ -117,7 +117,6 @@ class nn_convolutional_layer:
         # gradient w.r.t. inputs
         # create dLdy_windows for conv operation
         # calculate unpad_size used in backprop
-        # Since out_H_size = in_H_size-Wx_size+1+2*pad_size, in_H_size = out_H_size+Wx_size-1-2*pad_size => unpad_size_H = Wx_size-pad_size-1
         unpad_size_H = Wx_size - pad_size - 1
         unpad_size_W = Wy_size - pad_size - 1
         dLdy_padded = np.pad(dLdy, ((0, 0), (0, 0), (unpad_size_H, unpad_size_H), (unpad_size_W, unpad_size_W)), mode="constant", constant_values=0)
