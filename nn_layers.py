@@ -192,6 +192,51 @@ class nn_max_pooling_layer:
 
 
 ###########################
+## average pooling layer ##
+###########################
+
+class nn_avg_pooling_layer:
+    def __init__(self, stride, pool_size):
+        self.stride = stride
+        self.pool_size = pool_size
+        self.fwd_cache = None
+
+    def forward(self, X, is_training=True):
+        # input shape
+        batch_size, in_ch_size, in_H_size, in_W_size = X.shape
+
+        # get the output shape after pooling
+        out_H_size = (in_H_size - self.pool_size) // self.stride + 1
+        out_W_size = (in_W_size - self.pool_size) // self.stride + 1
+
+        # create a window view of the input tensor and then average pool
+        X_windows = view_as_windows(X, (1, 1, self.pool_size, self.pool_size), step=(1, 1, self.stride, self.stride))
+        X_reshaped = X_windows.reshape(batch_size, in_ch_size, out_H_size, out_W_size, self.pool_size, self.pool_size)
+        out = X_reshaped.mean(axis=(4, 5))  # average pool
+
+        # if is_training, save mask for gradient calculation in backpropagation phase
+        if is_training:
+            self.fwd_cache = {}
+            self.fwd_cache["X"] = X
+            self.fwd_cache["out_shape"] = out.shape
+
+        return out
+
+    def backprop(self, dLdy):
+        # ensure is_training=True, i.e., the forward cache exists
+        assert self.fwd_cache != None
+
+        # reshape dLdy to (batch_size, ch_size, out_H_size, out_W_size)
+        # since the shape of dLdy may be (batch_size, ch_size * out_H_size * out_W_size)
+        dLdy = dLdy.reshape(self.fwd_cache["out_shape"])
+
+        # compute the gradient and distribute evenly to each window position
+        dLdx = np.repeat(dLdy, self.pool_size, axis=2).repeat(self.pool_size, axis=3) / (self.pool_size ** 2)
+
+        return dLdx
+
+
+###########################
 ## fully connected layer ##
 ###########################
 # fully connected linear layer
