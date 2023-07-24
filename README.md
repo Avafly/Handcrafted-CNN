@@ -130,7 +130,7 @@ Now, the new convolutional layer is added. You can use this way to add and conne
 ## TODO
 
 - [x] Add BatchNormalization layer class
-- [ ] Add AveragePooling layer class
+- [x] Add AveragePooling layer class
 - [ ] Add parameters save and load functions
 
 ## Final words
