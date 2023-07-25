@@ -10,9 +10,8 @@ Detailed explanations on the implementation of neural network layers can be foun
 
 ## Features
 
-* All computations (e.g., forward and backward propagation, weight updates) are manually implemented using numpy and `view_as_windows`, without reliance on existing libraries, such as TensorFlow and PyTorch.
-* Flexible, adaptive layer implementations allow the model to accommodate different inputs based on user-defined hyperparameters.
-* Implemented with tensor dot product to perform computations over multiple batches and channel feature maps, instead of the use of iterative loops (e.g., for, while).
+* Tensor dot product operation provided by Numpy instead of for or while loop.
+* Flexible, adaptive layer implementations allow various customized network architectures.
 
 ## How to run
 
