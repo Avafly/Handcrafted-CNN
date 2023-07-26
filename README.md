@@ -10,7 +10,7 @@ Detailed explanations on the implementation of neural network layers can be foun
 
 ## Features
 
-* Tensor dot product operation provided by Numpy instead of for or while loop.
+* Tensor dot product operation provided by NumPy instead of for or while loops.
 * Flexible, adaptive layer implementations allow various customized network architectures.
 
 ## How to run
