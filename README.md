@@ -25,23 +25,29 @@ Since TensorFlow here is only used to download the dataset, either CPU or GPU ve
 
 ### Training
 
-<img src="./images/running.png" alt="training" width="700" />
+<p align="center">
+    <img src="./images/running.png" alt="training" width="700" />
+</p>
 
 ### Evaluation
 
 After training, the model is evaluated using test data.
 
-<img src="./images/test.png" alt="test" width="700" />
+<p align="center">
+    <img src="./images/test.png" alt="test" width="700" />
+</p>
 
 If `plot_sample_prediction == True`, a sample prediction plot will be generated after the testing is completed.
 
-<img src="./images/pred_demo_fashion_mnist.png" alt="test_result" width="700" />
+<p align="center">
+    <img src="./images/pred_demo_fashion_mnist.png" alt="test_result" width="700" />
+</p>
 
 ## Network architecture
 
-<img src="./images/net_archi.png" alt="net_archi" width="600" />
-
-
+<p align="center">
+  <img src="./images/net_archi.png" alt="net_archi" width="600" />
+</p>
 
 ## How to customize
 
@@ -56,18 +62,18 @@ If `plot_sample_prediction == True`, a sample prediction plot will be generated 
 
 Here is an example of adding a convolutional layer to the neural network. After adding the convolutional layer, the model's architecture becomes as follows.
 
-<img src="./images/edited_net_archi.png" alt="edited_net_archi" width="600" />
-
-
+<p align="center">
+  <img src="./images/edited_net_archi.png" alt="edited_net_archi" width="600" />
+</p>
 
 First, a new convolutional layer should be created in the `__init__` function.
 
 ```python
 # convolutional layer 1
-self.conv_layer_1 = nnl.nn_convolutional_layer(Wx_size=3, Wy_size=3, in_ch_size=1, out_ch_size=32, pad_size=1)
+self.conv_layer_1 = nnl.nn_convolutional_layer(kernel_size=3, in_ch_size=1, out_ch_size=32, pad_size=1)
 
 # convolutional layer 2
-self.conv_layer_2 = nnl.nn_convolutional_layer(Wx_size=3, Wy_size=3, in_ch_size=32, out_ch_size=32) # (new layer)
+self.conv_layer_2 = nnl.nn_convolutional_layer(kernel_size=3, in_ch_size=32, out_ch_size=32) # (new layer)
 ```
 
 Next, the new convolutional layer needs to be added properly in the `forward` function.
@@ -91,7 +97,11 @@ cv2_b, dldw_cv2, dldb_cv2 = self.conv_layer_2.backprop(ac1_b)   # (new layer)
 cv1_b, dldw_cv1, dldb_cv1 = self.conv_layer_1.backprop(cv2_b)
 ```
 
-Finally, add the weight updates of this new layer in the `update_weights` function.
+Finally, add the weight updates of this new layer in the `update_weights` function. The weights are updated using [RMSProp](https://link.toolin.cc/tpJzR), as follows.
+
+<p align="center">
+  <img src="./images/rmsprop_eq.png" alt="edited_net_archi" width="300"/>
+</p>
 
 ```python
 # load dLdW and dLdb for weight update
