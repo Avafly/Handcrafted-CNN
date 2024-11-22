@@ -1,0 +1,14 @@
+{
+    "layers": [
+        {"type": "conv", "params": {"kernel_size": 3, "in_ch_size": 1, "out_ch_size": 32}},
+        {"type": "relu", "params": {}},
+        {"type": "bn2d", "params": {"num_features": 32}},
+        {"type": "maxpool", "params": {"stride": 2, "pool_size": 2}},
+        {"type": "fc", "params": {"input_size": 5408, "output_size": 128}},
+        {"type": "relu", "params": {}},
+        {"type": "bn1d", "params": {"num_features": 128}},
+        {"type": "fc", "params": {"input_size": 128, "output_size": 10}},
+        {"type": "softmax", "params": {}},
+        {"type": "cross_entropy", "params": {}}
+    ]
+}

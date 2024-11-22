@@ -134,7 +134,7 @@ class nn_convolutional_layer:
         self.bwd_cache["dLdW"] = dLdW
         self.bwd_cache["dLdb"] = dLdb
 
-        return dLdx, dLdW, dLdb
+        return dLdx
 
 
 #######################
@@ -300,7 +300,7 @@ class nn_fc_layer:
         self.bwd_cache["dLdW"] = dLdW
         self.bwd_cache["dLdb"] = dLdb
 
-        return dLdx, dLdW, dLdb
+        return dLdx
 
     
 ######################
@@ -446,7 +446,7 @@ class nn_batchnorm_layer_2d:
         self.bwd_cache["dLdgamma"] = dLdgamma
         self.bwd_cache["dLdbeta"] = dLdbeta
 
-        return dLdx, dLdgamma, dLdbeta
+        return dLdx
 
 
 ############################
@@ -524,7 +524,7 @@ class nn_batchnorm_layer_1d:
         self.bwd_cache["dLdgamma"] = dLdgamma
         self.bwd_cache["dLdbeta"] = dLdbeta
 
-        return dLdx, dLdgamma, dLdbeta
+        return dLdx
 
 
 ###################

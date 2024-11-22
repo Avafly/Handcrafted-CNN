@@ -1,19 +1,15 @@
 import sys
 import numpy as np
 
-from model import nn_mnist_classifier
+from model import nn_classifier
+from keras.datasets import mnist
 
 #########################
 ## dataset preparation ##
 #########################
 
-# load MNIST dataset
-from keras.datasets import mnist
+print("Loading MNIST ...", flush=True)
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
-
-# load fashion MNIST dataset
-# from keras.datasets import fashion_mnist
-# (X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
 
 # insert channel dimension of 1
 # X: (n, 28, 28) -> (n, 1, 28, 28)
@@ -26,8 +22,8 @@ n_train_sample = 50000
 
 # preprocessing
 # normalize pixel values to (0, 1)
-X_train = X_train.astype("float32") / 255.0
-X_test = X_test.astype("float32") / 255.0
+X_train = X_train.astype(np.float32) / 255.0
+X_test = X_test.astype(np.float32) / 255.0
 
 ###########################
 ## hyperparameters setup ##
@@ -41,7 +37,8 @@ batch_size = 64
 beta = 0.9
 
 # define classifier
-classifier = nn_mnist_classifier(rmsprop_beta=beta, lr=lr)
+# classifier = nn_mnist_classifier(rmsprop_beta=beta, lr=lr)
+classifier = nn_classifier("./model_config.json", rmsprop_beta=beta, lr=lr)
 
 # number of steps per epoch
 n_steps = int(n_train_sample / batch_size)
@@ -166,7 +163,7 @@ print("Total accuracy: %.5f%%" % (tot_accy / test_iter * 100))
 # test plot randomly picked 10 samples
 if plot_sample_prediction:
     import matplotlib.pyplot as plt
-
+    
     num_plot = 10
     sample_index = np.random.randint(0, X_test.shape[0], (num_plot,))
     plt.figure(figsize=(12, 4))
@@ -191,7 +188,7 @@ if plot_sample_prediction:
         else:
             title_color = "r"
 
-        ax.set_title("Label:" + str(y_test[idx]) + "\n Pred:" + str(int(pred)), color=title_color)
+        ax.set_title("Label:" + str(y_test[idx]) + "\nPred: " + str(pred[0]), color=title_color)
 
     plt.tight_layout()
     plt.savefig("test_result.png")
