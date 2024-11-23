@@ -2,14 +2,18 @@ import sys
 import numpy as np
 
 from model import nn_classifier
-from keras.datasets import mnist
+# from keras.datasets import mnist
+from keras.datasets import fashion_mnist
 
 #########################
 ## dataset preparation ##
 #########################
 
 print("Loading MNIST ...", flush=True)
-(X_train, y_train), (X_test, y_test) = mnist.load_data()
+# (X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+# load fashion MNIST dataset
+(X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
 
 # insert channel dimension of 1
 # X: (n, 28, 28) -> (n, 1, 28, 28)

@@ -26,12 +26,6 @@ The model is defined in `model_config.json`, and you can edit it to build variou
 
 ## Demo
 
-### CPU usage
-
-<p align="center">
-    <img src="./images/cpu_usage.png" alt="training" />
-</p>
-
 ### Training
 
 <p align="center">
@@ -50,4 +44,10 @@ If `plot_sample_prediction == True`, a sample prediction plot will be generated 
 
 <p align="center">
     <img src="./images/pred_demo_fashion_mnist.png" alt="test_result" width="700" />
+</p>
+
+### CPU usage
+
+<p align="center">
+    <img src="./images/cpu_usage.png" alt="training" />
 </p>
